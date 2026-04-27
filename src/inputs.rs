@@ -17,16 +17,21 @@ static DIAL_PRESSED: Mutex<bool> = Mutex::new(false);
 /// Process raw input from N1 device (18 keys: 15 buttons + 3 LCDs, plus dial/face buttons)
 /// Device inputs 16-18 (top LCDs) map to OpenDeck keys 0-2
 /// Device inputs 1-15 (main grid) map to OpenDeck keys 3-17
-/// Device inputs 30, 31 (face buttons) are ignored (no display, no action)
+/// Device inputs 30, 31 (face buttons) are remapped to OpenDeck keys 0 and 1
 /// Device input 35 (dial press) maps to encoder 0
 /// Device inputs 50, 51 (dial rotation) map to encoder 0 twist
 pub fn process_input_n1(input: u8, state: u8) -> Result<DeviceInput, MirajazzError> {
     log::info!("Processing N1 input: input={}, state={}", input, state);
 
-    // Handle face buttons (inputs 30, 31) - EXPERIMENTAL: currently ignored
+    // Handle face buttons (inputs 30, 31) by remapping to top LCD keys (0, 1)
     if input == 30 || input == 31 {
-        log::info!("N1 face button pressed: input={}, ignoring (experimental)", input);
-        return Ok(DeviceInput::ButtonStateChange(vec![false; N1_KEY_COUNT]));
+        let remapped_input = if input == 30 { 16 } else { 17 };
+        log::info!(
+            "N1 face button input {} remapped to virtual input {}",
+            input,
+            remapped_input
+        );
+        return read_button_press_n1(remapped_input, state);
     }
 
     // Handle dial press (input 35)
