@@ -15,7 +15,7 @@ const N1_KEY_COUNT: usize = 18;
 static DIAL_PRESSED: Mutex<bool> = Mutex::new(false);
 
 /// Process raw input from N1 device (18 keys: 15 buttons + 3 LCDs, plus dial/face buttons)
-/// Device inputs 16-18 (top LCDs) map to OpenDeck keys 0-2
+/// Device inputs 16-18 (top LCDs) map to OpenDeck keys 0-2 should be working
 /// Device inputs 1-15 (main grid) map to OpenDeck keys 3-17
 /// Device inputs 30, 31 (face buttons) are remapped to OpenDeck keys 0 and 1
 /// Device input 35 (dial press) maps to encoder 0
@@ -30,7 +30,7 @@ pub fn process_input_n1(input: u8, state: u8) -> Result<DeviceInput, MirajazzErr
             "N1 face button input {} remapped to virtual input {}",
             input,
             remapped_input
-        );
+        ); 
         return read_button_press_n1(remapped_input, state);
     }
 
