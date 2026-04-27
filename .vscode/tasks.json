@@ -282,7 +282,8 @@
             "type": "cargo",
             "command": "cargo",
             "args": [
-                "run"
+                "run",
+                "--bin=opendeck-ajazz-n1"
             ],
             "group": {
                 "kind": "build",
@@ -291,6 +292,20 @@
             "problemMatcher": [
                 "$rustc"
             ]
+        },
+        {
+            "label": "Run opendeck-ajazz-n1 (shell)",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "run",
+                "--bin=opendeck-ajazz-n1"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "detail": "Run main plugin binary via shell task"
         },
         {
             "label": "Run test_detect",
@@ -306,11 +321,26 @@
             ]
         },
         {
+            "label": "Run test_detect (shell)",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "run",
+                "--bin=test_detect"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "detail": "Run test_detect via shell task"
+        },
+        {
             "label": "Run opendeck-ajazz-n1 (Release)",
             "type": "cargo",
             "command": "cargo",
             "args": [
                 "run",
+                "--bin=opendeck-ajazz-n1",
                 "--release"
             ],
             "group": "build",

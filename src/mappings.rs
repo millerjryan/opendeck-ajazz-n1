@@ -8,15 +8,22 @@ pub const DEVICE_NAMESPACE: &str = "N1";
 
 pub const AJAZZ_VID: u16 = 0x0300;
 pub const MIRABOX_VID: u16 = 0x6603;
+pub const VSDINSIDE_VID: u16 = 0x5548;
 pub const N1_PID: u16 = 0x3007;
 pub const N1MIR_PID: u16 = 0x1000;
+pub const N1VSD_PID: u16 = 0x1002;
+pub const N1VSD_ALT_PID: u16 = 0x1000;
 
 pub const N1_QUERY: DeviceQuery = DeviceQuery::new(65440, 1, AJAZZ_VID, N1_PID);
 pub const N1MIR_QUERY: DeviceQuery = DeviceQuery::new(65440, 1, MIRABOX_VID, N1MIR_PID);
+pub const N1VSD_QUERY: DeviceQuery = DeviceQuery::new(65440, 1, VSDINSIDE_VID, N1VSD_PID);
+pub const N1VSD_ALT_QUERY: DeviceQuery = DeviceQuery::new(65440, 1, VSDINSIDE_VID, N1VSD_ALT_PID);
 
-pub const QUERIES: [DeviceQuery; 2] = [
+pub const QUERIES: [DeviceQuery; 4] = [
     N1_QUERY,
-    N1MIR_QUERY
+    N1MIR_QUERY,
+    N1VSD_QUERY,
+    N1VSD_ALT_QUERY,
 ];
 
 /// Returns correct image format for device kind and key
@@ -37,7 +44,8 @@ pub fn get_image_format_for_key(_kind: &Kind, key: u8) -> ImageFormat {
 #[derive(Debug, Clone)]
 pub enum Kind {
     N1,
-    MiraboxN1
+    MiraboxN1,
+    VsdInsideN1,
 }
 
 impl Kind {
@@ -51,6 +59,10 @@ impl Kind {
             MIRABOX_VID => match pid {
                 N1MIR_PID => Some(Kind::MiraboxN1),
                 _ => None
+            },
+            VSDINSIDE_VID => match pid {
+                N1VSD_PID | N1VSD_ALT_PID => Some(Kind::VsdInsideN1),
+                _ => None,
             }
             _ => None
         }
@@ -93,7 +105,8 @@ impl Kind {
     pub fn human_name(&self) -> String {
         match &self {
             Self::N1 => "Ajazz N1",
-            Self::MiraboxN1 => "Mirabox N1"
+            Self::MiraboxN1 => "Mirabox N1",
+            Self::VsdInsideN1 => "VSDInside N1",
         }.to_string()
     }
 

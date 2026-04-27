@@ -17,6 +17,7 @@ Built with [openaction](https://crates.io/crates/openaction) 2.5.0
 
 - Ajazz N1 (0300:3007)
 - Mirabox N1 (6603:1000)
+- VSDInside N1 (5548:1002, 5548:1000)
 
 ## Features
 

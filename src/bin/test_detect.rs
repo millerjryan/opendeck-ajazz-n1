@@ -6,9 +6,12 @@ use mirajazz::device::{list_devices, DeviceQuery};
 // Device IDs
 const AJAZZ_VID: u16 = 0x0300;
 const N1_PID: u16 = 0x3007;
+const VSDINSIDE_VID: u16 = 0x5548;
+const VSDINSIDE_N1_PID: u16 = 0x1002;
+const VSDINSIDE_N1_ALT_PID: u16 = 0x1000;
 
 // All supported device queries (same as in mappings.rs)
-const SUPPORTED_QUERIES: [(DeviceQuery, &str); 13] = [
+const SUPPORTED_QUERIES: [(DeviceQuery, &str); 15] = [
     (DeviceQuery::new(65440, 1, 0x5548, 0x6670), "Mirabox HSV293S"),
     (DeviceQuery::new(65440, 1, 0x6603, 0x1014), "Mirabox HSV293SV3"),
     (DeviceQuery::new(65440, 1, 0x6603, 0x1005), "Mirabox HSV293SV3 (1005)"),
@@ -17,6 +20,8 @@ const SUPPORTED_QUERIES: [(DeviceQuery, &str); 13] = [
     (DeviceQuery::new(65440, 1, 0x0300, 0x3010), "Ajazz AKP153E (rev. 2)"),
     (DeviceQuery::new(65440, 1, 0x0300, 0x1020), "Ajazz AKP153R"),
     (DeviceQuery::new(65440, 1, 0x0300, 0x3007), "Ajazz N1"),
+    (DeviceQuery::new(65440, 1, VSDINSIDE_VID, VSDINSIDE_N1_PID), "VSDInside N1"),
+    (DeviceQuery::new(65440, 1, VSDINSIDE_VID, VSDINSIDE_N1_ALT_PID), "VSDInside N1"),
     (DeviceQuery::new(65440, 1, 0x0b00, 0x1000), "Mars Gaming MSD-ONE"),
     (DeviceQuery::new(65440, 1, 0x0c00, 0x1000), "Mad Dog GK150K"),
     (DeviceQuery::new(65440, 1, 0x0a00, 0x1001), "Risemode Vision 01"),
@@ -106,12 +111,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("   (no supported devices found)");
         println!("\n📝 Troubleshooting tips:");
         println!("   1. Make sure your device is plugged in");
-        println!("   2. Install udev rules:");
-        println!("      sudo cp 40-opendeck-ajazz-n1.rules /etc/udev/rules.d/");
-        println!("      sudo udevadm control --reload-rules");
+        if cfg!(target_os = "windows") {
+            println!("   2. On Windows, open Device Manager and verify VID/PID under Hardware IDs");
+            println!("      (example: HID\\VID_5548&PID_1002)");
+        } else {
+            println!("   2. Install udev rules:");
+            println!("      sudo cp 40-opendeck-ajazz-n1.rules /etc/udev/rules.d/");
+            println!("      sudo udevadm control --reload-rules");
+        }
         println!("   3. Unplug and replug the device");
-        println!("   4. Check if your user is in the 'plugdev' group:");
-        println!("      groups | grep plugdev");
+        if !cfg!(target_os = "windows") {
+            println!("   4. Check if your user is in the 'plugdev' group:");
+            println!("      groups | grep plugdev");
+        }
     }
     
     // Also show raw lsusb for verification
