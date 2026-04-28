@@ -75,29 +75,57 @@ fn read_button_states(states: &[u8], key_count: usize) -> Vec<bool> {
 }
 
 /// Converts opendeck key index to device key index for N1
-/// Maps 6×3 grid to device inputs.
-/// Both top LCDs (16-18) and main grid (1-15) have a +1 offset.
+/// Maps 3×6 horizontal grid to device inputs.
+/// Row 0: [KEY_13][KEY_10][KEY_7][KEY_4][KEY_1][LCD_16]  (OpenDeck 0-5)
+/// Row 1: [KEY_14][KEY_11][KEY_8][KEY_5][KEY_2][LCD_17]  (OpenDeck 6-11)
+/// Row 2: [KEY_15][KEY_12][KEY_9][KEY_6][KEY_3][LCD_18]  (OpenDeck 12-17)
+/// Device requires sending input-1 to address input N (the +1 offset).
 pub fn opendeck_to_device(key: u8) -> u8 {
     match key {
-        // Top row LCDs: send position-1 to compensate for +1 offset
-        0 => 15,  // Want 16, send 15 (15+1=16)
-        1 => 16,  // Want 17, send 16 (16+1=17)
-        2 => 17,  // Want 18, send 17 (17+1=18)
-        // Main grid (3-17): send (key-3) to compensate for +1 offset
-        3..=17 => key - 3,
+        0  => 12,  // → input 13
+        1  => 9,   // → input 10
+        2  => 6,   // → input 7
+        3  => 3,   // → input 4
+        4  => 0,   // → input 1
+        5  => 15,  // → input 16 (LCD)
+        6  => 13,  // → input 14
+        7  => 10,  // → input 11
+        8  => 7,   // → input 8
+        9  => 4,   // → input 5
+        10 => 1,   // → input 2
+        11 => 16,  // → input 17 (LCD)
+        12 => 14,  // → input 15
+        13 => 11,  // → input 12
+        14 => 8,   // → input 9
+        15 => 5,   // → input 6
+        16 => 2,   // → input 3
+        17 => 17,  // → input 18 (LCD)
         _ => key,
     }
 }
 
 /// Converts N1 device key index to opendeck key index
+/// Inverse of opendeck_to_device for the 3×6 horizontal layout.
 fn device_to_opendeck_n1(key: usize) -> usize {
     match key {
-        // Top LCDs: direct mapping
-        16 => 0,
-        17 => 1,
-        18 => 2,
-        // Main grid (1-15): direct mapping to OpenDeck 3-17
-        1..=15 => key + 2,
+        1  => 4,
+        2  => 10,
+        3  => 16,
+        4  => 3,
+        5  => 9,
+        6  => 15,
+        7  => 2,
+        8  => 8,
+        9  => 14,
+        10 => 1,
+        11 => 7,
+        12 => 13,
+        13 => 0,
+        14 => 6,
+        15 => 12,
+        16 => 5,   // LCD 16
+        17 => 11,  // LCD 17
+        18 => 17,  // LCD 18
         _ => key.saturating_sub(1),
     }
 }

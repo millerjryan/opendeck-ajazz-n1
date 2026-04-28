@@ -29,10 +29,10 @@ pub const QUERIES: [DeviceQuery; 4] = [
 /// Returns correct image format for device kind and key
 pub fn get_image_format_for_key(_kind: &Kind, key: u8) -> ImageFormat {
     // N1 uses different format: no rotation, no mirroring
-    // With 6×3 layout:
-    // Keys 0, 1, 2 are top LCD screens (64×64)
-    // Keys 3-17 are main buttons (96×96)
-    let size = if key <= 2 { (64, 64) } else { (96, 96) };
+    // With 3×6 horizontal layout:
+    // Keys 5, 11, 17 are the right-column LCD screens (64×64)
+    // All other keys are main buttons (96×96)
+    let size = if key == 5 || key == 11 || key == 17 { (64, 64) } else { (96, 96) };
     ImageFormat {
         mode: ImageMode::JPEG,
         size,
@@ -75,17 +75,15 @@ impl Kind {
 
     /// Returns (rows, cols) layout for this device type
     pub fn layout(&self) -> (usize, usize) {
-        // N1: 6 rows × 3 cols = 18 keys
-        // Arranged to match physical layout:
-        // Row 0: [LCD_16] [LCD_17] [LCD_18]  <- 3 top LCDs (inputs 16, 17, 18)
-        // Row 1: [KEY_1]  [KEY_2]  [KEY_3]   <- Main row 0 (inputs 1, 2, 3)
-        // Row 2: [KEY_4]  [KEY_5]  [KEY_6]   <- Main row 1 (inputs 4, 5, 6)
-        // Row 3: [KEY_7]  [KEY_8]  [KEY_9]   <- Main row 2 (inputs 7, 8, 9)
-        // Row 4: [KEY_10] [KEY_11] [KEY_12]  <- Main row 3 (inputs 10, 11, 12)
-        // Row 5: [KEY_13] [KEY_14] [KEY_15]  <- Main row 4 (inputs 13, 14, 15)
+        // N1: 3 rows × 6 cols = 18 keys (horizontal orientation)
+        // Arranged to match physical layout (device rotated 90° CW):
+        // Col:    0         1         2        3        4        5
+        // Row 0: [KEY_13] [KEY_10]  [KEY_7]  [KEY_4]  [KEY_1]  [LCD_16]
+        // Row 1: [KEY_14] [KEY_11]  [KEY_8]  [KEY_5]  [KEY_2]  [LCD_17]
+        // Row 2: [KEY_15] [KEY_12]  [KEY_9]  [KEY_6]  [KEY_3]  [LCD_18]
         // Note: The 2 top normal buttons (inputs 30, 31) are NOT shown in GUI
         // (They work but have no display, so we hide them to avoid confusion)
-        (6, 3)
+        (3, 6)
     }
 
     /// Returns number of display keys for this device
