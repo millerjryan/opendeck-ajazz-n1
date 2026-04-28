@@ -36,7 +36,7 @@ pub fn get_image_format_for_key(_kind: &Kind, key: u8) -> ImageFormat {
     ImageFormat {
         mode: ImageMode::JPEG,
         size,
-        rotation: ImageRotation::Rot0,
+        rotation: ImageRotation::Rot270,
         mirror: ImageMirroring::None,
     }
 }
